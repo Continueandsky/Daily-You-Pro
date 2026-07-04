@@ -147,5 +147,7 @@
     "templateDefaultTimestampTitle": "Временная метка",
     "templateDefaultTimestampBody": "{date} - {time}:",
     "templateDefaultSummaryTitle": "Итог дня",
-    "templateDefaultSummaryBody": "### Итог\n- \n\n### Цитата\n> "
+    "templateDefaultSummaryBody": "### Итог\n- \n\n### Цитата\n> ",
+    "actionToday": "Сегодня",
+    "actionOtherDay": "Другой день"
 }

@@ -133,5 +133,20 @@
     "settingsGalleryViewLayout": "Layout visualizzazione Galleria",
     "viewLayoutList": "Elenco",
     "viewLayoutGrid": "Griglia",
-    "settingsHideImagesInGallery": "Nascondi le immagini nella galleria"
+    "settingsHideImagesInGallery": "Nascondi le immagini nella galleria",
+    "actionTakePhoto": "Scatta foto",
+    "actionToday": "Oggi",
+    "actionOtherDay": "Altro giorno",
+    "flashbackOnThisDay": "Accade Oggi",
+    "dayCount": "{count, plural, one{{count} giorno} other{{count} giorni}}",
+    "chartOverTimeTitle": "{tag} nel tempo",
+    "calendarSystemGregorian": "Gregoriano",
+    "settingsHideImages": "Nascondi immagini",
+    "pageCalendarTitle": "Calendario",
+    "settingsOnThisDayDescription": "Rivisita ricordi passati",
+    "templateVariableTime": "Orario",
+    "templateDefaultSummaryTitle": "Riassunto Giornata",
+    "templateDefaultSummaryBody": "### Riepilogo\n- \n\n### Citazione\n> ",
+    "templateDefaultReflectionTitle": "Riflessione",
+    "templateDefaultReflectionBody": "### Che cosa ho apprezzato di oggi?\n- \n### Per cosa sono grato?\n- \n### Cosa mi aspetto di fare prossimamente?\n- "
 }

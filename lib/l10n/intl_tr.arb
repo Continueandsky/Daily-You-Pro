@@ -151,5 +151,13 @@
     "templateDefaultReflectionTitle": "Yansıma",
     "templateDefaultReflectionBody": "### Bugün hakkında neyi sevdiniz?\n- \n\n### Ne için şükrediyorsunuz?\n- \n\n### Neyi dört gözle bekliyorsunuz?\n- ",
     "templateDefaultTimestampBody": "{date} - {time}:",
-    "actionToday": "Bugün"
+    "actionToday": "Bugün",
+    "actionOtherDay": "Başka gün",
+    "chartOverTimeTitle": "{tag} zaman içerisinde",
+    "settingsCalendarSystem": "Takvim Sistemi",
+    "calendarSystemGregorian": "Gregoryen",
+    "calendarSystemJalali": "Celali",
+    "settingsHideImages": "Resimleri gizle",
+    "pageCalendarTitle": "Takvim",
+    "settingsOnThisDayDescription": "Geçmiş anılarını ziyaret et"
 }

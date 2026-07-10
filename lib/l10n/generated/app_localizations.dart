@@ -1227,6 +1227,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mood'**
   String get tagMoodTitle;
+
+  /// No description provided for @settingsAudioTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get settingsAudioTitle;
+
+  /// No description provided for @settingsAutoPlayAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Play Background Music'**
+  String get settingsAutoPlayAudio;
+
+  /// No description provided for @pickAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Audio'**
+  String get pickAudio;
+
+  /// No description provided for @audioPlayerPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get audioPlayerPlay;
+
+  /// No description provided for @audioPlayerPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get audioPlayerPause;
+
+  /// No description provided for @deleteAudioTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Audio'**
+  String get deleteAudioTitle;
+
+  /// No description provided for @deleteAudioDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete this audio?'**
+  String get deleteAudioDescription;
+
+  /// No description provided for @renameAudioTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename Audio'**
+  String get renameAudioTitle;
+
+  /// No description provided for @renameAudioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter new name'**
+  String get renameAudioHint;
+
+  /// No description provided for @renameAudioConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename'**
+  String get renameAudioConfirm;
 }
 
 class _AppLocalizationsDelegate

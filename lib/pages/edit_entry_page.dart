@@ -2,15 +2,19 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:daily_you/database/image_storage.dart';
+import 'package:daily_you/database/audio_storage.dart';
 import 'package:daily_you/models/image.dart';
+import 'package:daily_you/models/audio.dart';
 import 'package:daily_you/notification_manager.dart';
 import 'package:daily_you/providers/entries_provider.dart';
 import 'package:daily_you/providers/templates_provider.dart';
 import 'package:daily_you/providers/entry_images_provider.dart';
+import 'package:daily_you/providers/entry_audio_provider.dart';
 import 'package:daily_you/time_manager.dart';
 import 'package:daily_you/pages/full_screen_text_editor_page.dart';
 import 'package:daily_you/widgets/edit_toolbar.dart';
 import 'package:daily_you/widgets/entry_image_editable_list.dart';
+import 'package:daily_you/widgets/entry_audio_picker.dart';
 import 'package:daily_you/widgets/template_select_button.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +52,7 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
   DateTime? _lastEntryDate;
   DateTime? entryDate;
   late List<EntryImage> _currentImages;
+  EntryAudio? _currentAudio;
   bool _loadingEntry = true;
   bool _openedCamera = false;
   final ScrollController _scrollController = ScrollController();
@@ -97,6 +102,13 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
         _saveEntry();
       });
     });
+    // Load existing audio
+    if (_entry.id != null) {
+      var existingAudio = EntryAudioProvider.instance.getForEntry(_entry);
+      if (existingAudio != null) {
+        _currentAudio = existingAudio.copy();
+      }
+    }
     setState(() {
       _loadingEntry = false;
     });
@@ -110,6 +122,7 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
     for (var image in widget.images) {
       _currentImages.add(image.copy());
     }
+    _currentAudio = null;
     _initEntry();
   }
 
@@ -322,15 +335,28 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
                                                     ),
                                                   ),
                                                 ),
-                                                EntryImagePicker(
-                                                  onChangedImage: (newImages) {
-                                                    _openedCamera = true;
-                                                    _addImage(newImages);
-                                                  },
-                                                  openCamera:
-                                                      widget.openCamera &&
-                                                          !_openedCamera,
-                                                )
+                                                Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    EntryImagePicker(
+                                                      onChangedImage: (newImages) {
+                                                        _openedCamera = true;
+                                                        _addImage(newImages);
+                                                      },
+                                                      openCamera:
+                                                          widget.openCamera &&
+                                                              !_openedCamera,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    EntryAudioPicker(
+                                                      currentAudio: _currentAudio,
+                                                      onChangedAudio: (audio) async {
+                                                        _currentAudio = audio;
+                                                        await _saveEntry();
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
                                               ],
                                             ),
                                           ),
@@ -474,6 +500,8 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
       }
       // Images will update if they changed
       await _saveOrUpdateImage(id);
+      // Audio will update if it changed
+      await _saveOrUpdateAudio(id);
       _savingEntry = false;
     }
   }
@@ -484,6 +512,12 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
     for (EntryImage image in entryImages) {
       await ImageStorage.instance.delete(image.imgPath);
       await EntryImagesProvider.instance.remove(image);
+    }
+    // Delete entry audio
+    var entryAudio = EntryAudioProvider.instance.getForEntry(entry);
+    if (entryAudio != null) {
+      await AudioStorage.instance.delete(entryAudio.audioPath);
+      await EntryAudioProvider.instance.remove(entryAudio);
     }
     // Delete entry
     await EntriesProvider.instance.remove(entry);
@@ -521,6 +555,32 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
     }
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  Future _saveOrUpdateAudio(int entryId) async {
+    if (entryId == -1 || _entry.id == null) return;
+    final existingAudio = EntryAudioProvider.instance.getForEntry(_entry);
+
+    if (_currentAudio != null) {
+      _currentAudio!.entryId = entryId;
+      if (existingAudio == null) {
+        // Add new audio
+        await EntryAudioProvider.instance.add(_currentAudio!);
+      } else if (existingAudio.audioPath != _currentAudio!.audioPath) {
+        // Audio changed — delete old, add new
+        await AudioStorage.instance.delete(existingAudio.audioPath);
+        await EntryAudioProvider.instance.remove(existingAudio);
+        await EntryAudioProvider.instance.add(_currentAudio!);
+      }
+      // Refresh _currentAudio to match saved state
+      var savedAudio = EntryAudioProvider.instance.getForEntry(_entry);
+      _currentAudio = savedAudio?.copy();
+    } else if (existingAudio != null) {
+      // Audio removed
+      await AudioStorage.instance.delete(existingAudio.audioPath);
+      await EntryAudioProvider.instance.remove(existingAudio);
+      _currentAudio = null;
     }
   }
 

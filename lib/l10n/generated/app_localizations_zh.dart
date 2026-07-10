@@ -630,6 +630,36 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tagMoodTitle => '心情';
+
+  @override
+  String get settingsAudioTitle => '音频';
+
+  @override
+  String get settingsAutoPlayAudio => '自动播放背景音乐';
+
+  @override
+  String get pickAudio => '选择音频';
+
+  @override
+  String get audioPlayerPlay => '播放';
+
+  @override
+  String get audioPlayerPause => '暂停';
+
+  @override
+  String get deleteAudioTitle => '删除音频';
+
+  @override
+  String get deleteAudioDescription => '确定要删除这段音频吗？';
+
+  @override
+  String get renameAudioTitle => '重命名音频';
+
+  @override
+  String get renameAudioHint => '输入新名称';
+
+  @override
+  String get renameAudioConfirm => '重命名';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).

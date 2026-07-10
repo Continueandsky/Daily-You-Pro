@@ -5,6 +5,7 @@ import 'package:daily_you/database/entry_dao.dart';
 import 'package:daily_you/models/entry.dart';
 import 'package:daily_you/notification_manager.dart';
 import 'package:daily_you/providers/entry_images_provider.dart';
+import 'package:daily_you/providers/entry_audio_provider.dart';
 import 'package:daily_you/providers/templates_provider.dart';
 import 'package:daily_you/time_manager.dart';
 import 'package:daily_you/widgets/stat_range_selector.dart';
@@ -159,6 +160,10 @@ class EntriesProvider with ChangeNotifier {
       var images = EntryImagesProvider.instance.getForEntry(entry);
       for (final image in images) {
         await EntryImagesProvider.instance.remove(image);
+      }
+      var audio = EntryAudioProvider.instance.getForEntry(entry);
+      if (audio != null) {
+        await EntryAudioProvider.instance.remove(audio);
       }
       processedEntries += 1;
       // The provider's remove function is not used to avoid editing the entries

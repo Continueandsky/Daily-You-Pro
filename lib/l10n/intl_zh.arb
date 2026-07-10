@@ -161,5 +161,15 @@
     "settingsCalendarSystem": "历法系统",
     "calendarSystemGregorian": "公历",
     "calendarSystemJalali": "波斯历",
-    "imagesTitle": "图像"
+    "imagesTitle": "图像",
+    "settingsAudioTitle": "音频",
+    "settingsAutoPlayAudio": "自动播放背景音乐",
+    "pickAudio": "选择音频",
+    "audioPlayerPlay": "播放",
+    "audioPlayerPause": "暂停",
+    "deleteAudioTitle": "删除音频",
+    "deleteAudioDescription": "确定要删除这段音频吗？",
+    "renameAudioTitle": "重命名音频",
+    "renameAudioHint": "输入新名称",
+    "renameAudioConfirm": "重命名"
 }

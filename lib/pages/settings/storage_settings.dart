@@ -3,6 +3,7 @@ import 'package:daily_you/utils/backup_restore_utils.dart';
 import 'package:daily_you/config_provider.dart';
 import 'package:daily_you/database/app_database.dart';
 import 'package:daily_you/database/image_storage.dart';
+import 'package:daily_you/database/audio_storage.dart';
 import 'package:daily_you/providers/entries_provider.dart';
 import 'package:daily_you/widgets/settings_dropdown.dart';
 import 'package:daily_you/widgets/settings_icon_action.dart';
@@ -238,6 +239,7 @@ class _StorageSettingsState extends State<StorageSettings> {
     });
 
     await ImageStorage.instance.garbageCollectImages();
+    await AudioStorage.instance.garbageCollectAudios();
 
     if (!context.mounted) return;
     Navigator.of(context).pop();

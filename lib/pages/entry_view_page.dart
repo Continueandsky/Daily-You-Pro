@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:daily_you/config_provider.dart';
 import 'package:daily_you/database/image_storage.dart';
 import 'package:daily_you/l10n/generated/app_localizations.dart';
 import 'package:daily_you/models/image.dart';
@@ -7,10 +8,12 @@ import 'package:daily_you/pages/edit_entry_page.dart';
 import 'package:daily_you/pages/image_view_page.dart';
 import 'package:daily_you/providers/entries_provider.dart';
 import 'package:daily_you/providers/entry_images_provider.dart';
+import 'package:daily_you/providers/entry_audio_provider.dart';
 import 'package:daily_you/time_manager.dart';
 import 'package:daily_you/widgets/local_image_loader.dart';
 import 'package:daily_you/widgets/mood_icon.dart';
 import 'package:daily_you/widgets/scaled_markdown.dart';
+import 'package:daily_you/widgets/entry_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -42,6 +45,11 @@ class _EntryViewPageState extends State<EntryViewPage> {
     if (entry == null) return const Scaffold();
 
     final images = entryImagesProvider.getForEntry(entry);
+    final entryAudio =
+        Provider.of<EntryAudioProvider>(context).getForEntry(entry);
+    final autoPlayAudio =
+        Provider.of<ConfigProvider>(context).get(ConfigKey.autoPlayAudio) ??
+            true;
 
     return Scaffold(
       appBar: AppBar(
@@ -85,6 +93,11 @@ class _EntryViewPageState extends State<EntryViewPage> {
                             ),
                           ));
                         },
+                      ),
+                    if (entryAudio != null)
+                      EntryAudioPlayer(
+                        audioPath: entryAudio.audioPath,
+                        autoPlay: autoPlayAudio,
                       ),
                     Card.filled(
                       color: Theme.of(context).colorScheme.surfaceContainer,

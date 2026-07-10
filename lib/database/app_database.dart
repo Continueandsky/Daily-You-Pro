@@ -5,9 +5,11 @@ import 'package:daily_you/database/image_storage.dart';
 import 'package:daily_you/utils/file_layer.dart';
 import 'package:daily_you/models/entry.dart';
 import 'package:daily_you/models/image.dart';
+import 'package:daily_you/models/audio.dart';
 import 'package:daily_you/models/template.dart';
 import 'package:daily_you/providers/entries_provider.dart';
 import 'package:daily_you/providers/entry_images_provider.dart';
+import 'package:daily_you/providers/entry_audio_provider.dart';
 import 'package:daily_you/providers/templates_provider.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:path/path.dart';
@@ -41,10 +43,11 @@ class AppDatabase {
 
   Future<void> open() async {
     _database = await openDatabase(_internalPath!,
-        version: 3, onCreate: _createDatabase, onUpgrade: _onUpgrade);
+        version: 4, onCreate: _createDatabase, onUpgrade: _onUpgrade);
 
     await EntriesProvider.instance.load();
     await EntryImagesProvider.instance.load();
+    await EntryAudioProvider.instance.load();
     await TemplatesProvider.instance.load();
   }
 
@@ -268,6 +271,16 @@ CREATE TABLE $imagesTable (
     FOREIGN KEY (${EntryImageFields.entryId}) REFERENCES $entriesTable (id)
 )
 ''');
+
+    await db.execute('''
+CREATE TABLE $audiosTable (
+    ${EntryAudioFields.id} INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    ${EntryAudioFields.entryId} INTEGER NOT NULL,
+    ${EntryAudioFields.audioPath} TEXT NOT NULL,
+    ${EntryAudioFields.timeCreate} DATETIME NOT NULL DEFAULT (DATETIME('now')),
+    FOREIGN KEY (${EntryAudioFields.entryId}) REFERENCES $entriesTable (id)
+)
+''');
   }
 
   void _onUpgrade(Database db, int oldVersion, int newVersion) async {
@@ -334,6 +347,17 @@ FROM old_entries;
 DROP TABLE old_entries;
     ''');
       });
+    }
+    if (oldVersion <= 3) {
+      await db.execute('''
+CREATE TABLE $audiosTable (
+    ${EntryAudioFields.id} INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    ${EntryAudioFields.entryId} INTEGER NOT NULL,
+    ${EntryAudioFields.audioPath} TEXT NOT NULL,
+    ${EntryAudioFields.timeCreate} DATETIME NOT NULL DEFAULT (DATETIME('now')),
+    FOREIGN KEY (${EntryAudioFields.entryId}) REFERENCES $entriesTable (id)
+)
+''');
     }
   }
 }

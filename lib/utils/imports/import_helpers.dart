@@ -1,11 +1,13 @@
 import 'package:daily_you/database/image_storage.dart';
 import 'package:daily_you/providers/entries_provider.dart';
 import 'package:daily_you/providers/entry_images_provider.dart';
+import 'package:daily_you/providers/entry_audio_provider.dart';
 
 Future<void> finishImport(Function(String) updateStatus,
     {bool syncImages = false}) async {
   await EntriesProvider.instance.load();
   await EntryImagesProvider.instance.load();
+  await EntryAudioProvider.instance.load();
   if (syncImages && ImageStorage.instance.usingExternalLocation()) {
     await ImageStorage.instance.syncImageFolder(true, updateStatus: updateStatus);
   }

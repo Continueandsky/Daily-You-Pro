@@ -6,6 +6,7 @@ import 'package:daily_you/pages/settings/flashback_settings.dart';
 import 'package:daily_you/pages/settings/language_settings.dart';
 import 'package:daily_you/pages/settings/notification_settings.dart';
 import 'package:daily_you/pages/settings/security_settings.dart';
+import 'package:daily_you/pages/settings/audio_settings.dart';
 import 'package:daily_you/pages/settings/storage_settings.dart';
 import 'package:daily_you/pages/settings/templates_page.dart';
 import 'package:daily_you/providers/entries_provider.dart';
@@ -100,6 +101,10 @@ class _SettingsPageState extends State<SettingsPage> {
               title: AppLocalizations.of(context)!.flashbacksTitle,
               icon: Icons.history_rounded,
               page: FlashbackSettings()),
+          SettingsCategory(
+              title: AppLocalizations.of(context)!.settingsAudioTitle,
+              icon: Icons.music_note_rounded,
+              page: AudioSettings()),
           SettingsCategory(
               title: AppLocalizations.of(context)!.settingsTemplatesTitle,
               icon: Icons.description_rounded,

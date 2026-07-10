@@ -648,4 +648,34 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get tagMoodTitle => 'Humeur';
+
+  @override
+  String get settingsAudioTitle => 'Audio';
+
+  @override
+  String get settingsAutoPlayAudio => 'Auto-Play Background Music';
+
+  @override
+  String get pickAudio => 'Pick Audio';
+
+  @override
+  String get audioPlayerPlay => 'Play';
+
+  @override
+  String get audioPlayerPause => 'Pause';
+
+  @override
+  String get deleteAudioTitle => 'Delete Audio';
+
+  @override
+  String get deleteAudioDescription => 'Do you want to delete this audio?';
+
+  @override
+  String get renameAudioTitle => 'Rename Audio';
+
+  @override
+  String get renameAudioHint => 'Enter new name';
+
+  @override
+  String get renameAudioConfirm => 'Rename';
 }

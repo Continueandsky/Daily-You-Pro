@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:daily_you/database/app_database.dart';
 import 'package:daily_you/database/image_storage.dart';
+import 'package:daily_you/database/audio_storage.dart';
 import 'package:daily_you/utils/file_layer.dart';
 import 'package:daily_you/utils/zip_utils.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +28,8 @@ class BackupRestoreUtils {
       await ZipUtils.compress(tempExportZipFile.path, [
         await AppDatabase.instance.getInternalPath()
       ], [
-        await ImageStorage.instance.getInternalFolder()
+        await ImageStorage.instance.getInternalFolder(),
+        await AudioStorage.instance.getInternalFolder()
       ], onProgress: (percent) {
         updateStatus(AppLocalizations.of(context)!
             .creatingBackupStatus("${percent.round()}"));
@@ -112,6 +114,18 @@ class BackupRestoreUtils {
           }
           if (ImageStorage.instance.usingExternalLocation()) {
             await ImageStorage.instance.syncImageFolder(true);
+          }
+        }
+        // Import audio files
+        if (await Directory(join(restoreFolder.path, "Audio")).exists()) {
+          var audioFiles = Directory(join(restoreFolder.path, "Audio")).list();
+          final internalAudioPath =
+              await AudioStorage.instance.getInternalFolder();
+          await for (FileSystemEntity fileEntity in audioFiles) {
+            if (fileEntity is File) {
+              await File(join(internalAudioPath, basename(fileEntity.path)))
+                  .writeAsBytes(await fileEntity.readAsBytes());
+            }
           }
         }
       } else {

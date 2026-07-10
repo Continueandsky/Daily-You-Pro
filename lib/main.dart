@@ -10,6 +10,7 @@ import 'package:daily_you/notification_manager.dart';
 import 'package:daily_you/pages/launch_page.dart';
 import 'package:daily_you/providers/entries_provider.dart';
 import 'package:daily_you/providers/entry_images_provider.dart';
+import 'package:daily_you/providers/entry_audio_provider.dart';
 import 'package:daily_you/providers/templates_provider.dart';
 import 'package:daily_you/time_manager.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -125,8 +126,8 @@ void main() async {
   if (Platform.isLinux || Platform.isWindows) {
     // Initialize FFI
     sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
   }
-  databaseFactory = databaseFactoryFfi;
   WidgetsFlutterBinding.ensureInitialized();
 
   // Create the config file if it doesn't exist
@@ -155,6 +156,9 @@ void main() async {
     ),
     ChangeNotifierProvider<EntryImagesProvider>(
       create: (_) => EntryImagesProvider.instance,
+    ),
+    ChangeNotifierProvider<EntryAudioProvider>(
+      create: (_) => EntryAudioProvider.instance,
     ),
     ChangeNotifierProvider<TemplatesProvider>(
       create: (_) => TemplatesProvider.instance,

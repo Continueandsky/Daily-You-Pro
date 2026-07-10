@@ -29,7 +29,7 @@ dependencies:
   flutter_colorpicker: ^1.0.3
   shared_storage:
     git:
-      url: https://github.com/Demizo/shared-storage
+      url: git@github.com:Demizo/shared-storage.git
       ref: release
   device_info_plus: ^12.4.0
   fl_chart: ^1.2.0
@@ -62,6 +62,7 @@ dependencies:
   dynamic_color: ^1.8.1
   uuid: ^4.5.3
   flutter_expandable_fab: ^2.3.0
+  audioplayers: ^6.1.0
   shamsi_date:
   persian_datetime_picker: ^3.2.0
 dev_dependencies:

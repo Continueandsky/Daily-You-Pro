@@ -67,6 +67,7 @@ class ConfigKey {
   static const String moodOverTimeSmoothing = "moodOverTimeSmoothing";
   static const String statsRange = "statsRange";
   static const String autoPlayAudio = "autoPlayAudio";
+  static const String loopAudio = "loopAudio";
   // Secure Configuration Values
   static const String requirePassword = "requirePassword";
   static const String biometricUnlock = "biometricUnlock";
@@ -145,6 +146,7 @@ class ConfigProvider with ChangeNotifier {
     ConfigKey.moodOverTimeSmoothing: true,
     ConfigKey.statsRange: 'allTime',
     ConfigKey.autoPlayAudio: true,
+    ConfigKey.loopAudio: false,
   };
 
   final Map<String, dynamic> _secureConfig = {

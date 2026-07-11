@@ -34,6 +34,13 @@ class _AudioSettingsState extends State<AudioSettings> {
               configProvider.set(ConfigKey.autoPlayAudio, value);
             },
           ),
+          SettingsToggle(
+            title: AppLocalizations.of(context)!.settingsLoopAudio,
+            settingsKey: ConfigKey.loopAudio,
+            onChanged: (value) {
+              configProvider.set(ConfigKey.loopAudio, value);
+            },
+          ),
         ],
       ),
     );

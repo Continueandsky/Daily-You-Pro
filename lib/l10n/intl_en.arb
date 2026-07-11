@@ -372,5 +372,19 @@
   "@renameAudioTitle": {},
   "renameAudioHint": "Enter new name",
   "@renameAudioHint": {},
-  "renameAudioConfirm": "Rename"
+  "renameAudioConfirm": "Rename",
+  "galleryViewGrid": "Grid view",
+  "galleryViewList": "List view",
+  "settingsLoopAudio": "Loop playback",
+  "@settingsLoopAudio": {},
+  "recordAudio": "Record audio",
+  "@recordAudio": {},
+  "stopRecording": "Stop recording",
+  "@stopRecording": {},
+  "audioCount": "{count, plural, =1{{count} audio} other{{count} audios}}",
+  "@audioCount": {
+    "placeholders": {
+      "count": {}
+    }
+  }
 }

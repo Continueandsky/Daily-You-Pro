@@ -13,7 +13,7 @@ import 'package:daily_you/time_manager.dart';
 import 'package:daily_you/widgets/local_image_loader.dart';
 import 'package:daily_you/widgets/mood_icon.dart';
 import 'package:daily_you/widgets/scaled_markdown.dart';
-import 'package:daily_you/widgets/entry_audio_player.dart';
+import 'package:daily_you/widgets/entry_audio_playlist.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -45,8 +45,8 @@ class _EntryViewPageState extends State<EntryViewPage> {
     if (entry == null) return const Scaffold();
 
     final images = entryImagesProvider.getForEntry(entry);
-    final entryAudio =
-        Provider.of<EntryAudioProvider>(context).getForEntry(entry);
+    final entryAudios =
+        Provider.of<EntryAudioProvider>(context).getForEntry(entry.id!);
     final autoPlayAudio =
         Provider.of<ConfigProvider>(context).get(ConfigKey.autoPlayAudio) ??
             true;
@@ -94,9 +94,9 @@ class _EntryViewPageState extends State<EntryViewPage> {
                           ));
                         },
                       ),
-                    if (entryAudio != null)
-                      EntryAudioPlayer(
-                        audioPath: entryAudio.audioPath,
+                    if (entryAudios.isNotEmpty)
+                      EntryAudioPlaylist(
+                        audios: entryAudios,
                         autoPlay: autoPlayAudio,
                       ),
                     Card.filled(

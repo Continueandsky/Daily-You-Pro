@@ -171,5 +171,11 @@
     "deleteAudioDescription": "确定要删除这段音频吗？",
     "renameAudioTitle": "重命名音频",
     "renameAudioHint": "输入新名称",
-    "renameAudioConfirm": "重命名"
+    "renameAudioConfirm": "重命名",
+    "galleryViewGrid": "网格视图",
+    "galleryViewList": "列表视图",
+    "settingsLoopAudio": "循环播放",
+    "recordAudio": "录制音频",
+    "stopRecording": "停止录制",
+    "audioCount": "{count} 段音频"
 }

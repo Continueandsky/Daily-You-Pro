@@ -1287,6 +1287,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rename'**
   String get renameAudioConfirm;
+
+  /// No description provided for @galleryViewGrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Grid view'**
+  String get galleryViewGrid;
+
+  /// No description provided for @galleryViewList.
+  ///
+  /// In en, this message translates to:
+  /// **'List view'**
+  String get galleryViewList;
+
+  /// No description provided for @settingsLoopAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Loop playback'**
+  String get settingsLoopAudio;
+
+  /// No description provided for @recordAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Record audio'**
+  String get recordAudio;
+
+  /// No description provided for @stopRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop recording'**
+  String get stopRecording;
+
+  /// No description provided for @audioCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{count} audio} other{{count} audios}}'**
+  String audioCount(num count);
 }
 
 class _AppLocalizationsDelegate

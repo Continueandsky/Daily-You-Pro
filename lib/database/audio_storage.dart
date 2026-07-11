@@ -83,30 +83,76 @@ class AudioStorage {
     return newAudioName;
   }
 
-  Future<String?> rename(String oldName, String newBaseName) async {
-    final internalFolder = await getInternalFolder();
-    final oldPath = join(internalFolder, oldName);
-    final oldExt = extension(oldName);
-    var newName = '$newBaseName$oldExt';
+  /// Copy an audio file from an external source path into the audio storage.
+  /// Uses [File.copy] for streaming I/O — avoids loading the entire file into
+  /// memory, so large audio files won't cause OOM.
+  Future<String?> copyFrom(String sourcePath, String? sourceName) async {
+    try {
+      final internalFolder = await getInternalFolder();
+      final ext = sourceName != null ? extension(sourceName) : extension(sourcePath);
+      final timestamp =
+          DateTime.now().toIso8601String().split('.').first.replaceAll(':', '-');
+      var newName = 'daily_you_$timestamp$ext';
 
-    // Ensure unique name
-    int index = 1;
-    while (await FileLayer.exists(internalFolder,
-        name: newName, useExternalPath: false)) {
-      newName = '${newBaseName}_$index$oldExt';
-      index += 1;
+      int index = 1;
+      while (await FileLayer.exists(internalFolder,
+          name: newName, useExternalPath: false)) {
+        newName = 'daily_you_${timestamp}_$index$ext';
+        index += 1;
+      }
+
+      final destPath = join(internalFolder, newName);
+      await File(sourcePath).copy(destPath);
+      return newName;
+    } catch (e) {
+      print('AudioStorage.copyFrom error: $e');
+      return null;
     }
+  }
 
-    final newPath = join(internalFolder, newName);
-    await File(oldPath).rename(newPath);
-    return newName;
+  Future<String?> rename(String oldName, String newBaseName) async {
+    try {
+      final internalFolder = await getInternalFolder();
+      final oldPath = join(internalFolder, oldName);
+      final oldExt = extension(oldName);
+      // Sanitize: keep only valid filename chars, strip path separators
+      final safeName = newBaseName.replaceAll(RegExp(r'[/\\:*?"<>|]'), '_').trim();
+      if (safeName.isEmpty) return oldName;
+      var newName = '$safeName$oldExt';
+
+      // Ensure unique name
+      int index = 1;
+      while (await FileLayer.exists(internalFolder,
+          name: newName, useExternalPath: false)) {
+        newName = '${safeName}_$index$oldExt';
+        index += 1;
+      }
+
+      final newPath = join(internalFolder, newName);
+      final oldFile = File(oldPath);
+      if (!oldFile.existsSync()) return null;
+      await oldFile.rename(newPath);
+      return newName;
+    } catch (e) {
+      print('AudioStorage.rename error: $e');
+      return null;
+    }
   }
 
   Future<bool> delete(String audioName) async {
-    final internalFolder = await getInternalFolder();
-    await FileLayer.deleteFile(internalFolder,
-        name: audioName, useExternalPath: false);
-    return true;
+    try {
+      final internalFolder = await getInternalFolder();
+      // Only delete if the file actually exists (may have been renamed)
+      if (await FileLayer.exists(internalFolder,
+          name: audioName, useExternalPath: false)) {
+        await FileLayer.deleteFile(internalFolder,
+            name: audioName, useExternalPath: false);
+      }
+      return true;
+    } catch (e) {
+      print('AudioStorage.delete error: $e');
+      return true; // Don't fail if cleanup fails
+    }
   }
 
   Future<bool> garbageCollectAudios() async {

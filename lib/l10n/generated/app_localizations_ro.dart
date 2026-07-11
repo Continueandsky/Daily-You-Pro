@@ -672,4 +672,30 @@ class AppLocalizationsRo extends AppLocalizations {
 
   @override
   String get renameAudioConfirm => 'Rename';
+
+  @override
+  String get galleryViewGrid => 'Grid view';
+
+  @override
+  String get galleryViewList => 'List view';
+
+  @override
+  String get settingsLoopAudio => 'Loop playback';
+
+  @override
+  String get recordAudio => 'Record audio';
+
+  @override
+  String get stopRecording => 'Stop recording';
+
+  @override
+  String audioCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count audios',
+      one: '$count audio',
+    );
+    return '$_temp0';
+  }
 }

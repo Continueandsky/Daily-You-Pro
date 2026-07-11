@@ -660,6 +660,26 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get renameAudioConfirm => '重命名';
+
+  @override
+  String get galleryViewGrid => '网格视图';
+
+  @override
+  String get galleryViewList => '列表视图';
+
+  @override
+  String get settingsLoopAudio => '循环播放';
+
+  @override
+  String get recordAudio => '录制音频';
+
+  @override
+  String get stopRecording => '停止录制';
+
+  @override
+  String audioCount(num count) {
+    return '$count 段音频';
+  }
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hant`).

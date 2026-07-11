@@ -1,6 +1,7 @@
 import 'package:daily_you/config_provider.dart';
 import 'package:daily_you/models/entry.dart';
 import 'package:daily_you/providers/entries_provider.dart';
+import 'package:daily_you/widgets/month_overview_card.dart';
 import 'package:daily_you/widgets/mood_by_day_chart.dart';
 import 'package:daily_you/widgets/mood_over_time_chart.dart';
 import 'package:daily_you/widgets/mood_summary_chart.dart';
@@ -66,9 +67,37 @@ class _StatsPageState extends State<StatsPage>
     final logCount = entriesProvider.entries.length;
     final entryDayCount = entriesProvider.getEntryDayCount();
 
+    // Calculate total days in the selected range
+    final now = DateTime.now();
+    int totalDaysInRange;
+    switch (statsRange) {
+      case StatsRange.month:
+        totalDaysInRange = DateTime(now.year, now.month + 1, 0).day;
+        break;
+      case StatsRange.sixMonths:
+        totalDaysInRange = now.difference(DateTime(now.year, now.month - 5, 1)).inDays;
+        break;
+      case StatsRange.year:
+        totalDaysInRange = now.difference(DateTime(now.year - 1, now.month, now.day)).inDays;
+        break;
+      case StatsRange.allTime:
+        final firstEntry = entriesProvider.entries.isNotEmpty
+            ? entriesProvider.entries.last.timeCreate
+            : now;
+        totalDaysInRange = now.difference(firstEntry).inDays + 1;
+        break;
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, right: 4, top: 4),
+          child: MonthOverviewCard(
+            entriesInRange: entriesInRange,
+            totalDaysInRange: totalDaysInRange,
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 2.0),
           child: Wrap(

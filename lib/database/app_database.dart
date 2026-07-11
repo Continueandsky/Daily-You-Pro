@@ -43,7 +43,7 @@ class AppDatabase {
 
   Future<void> open() async {
     _database = await openDatabase(_internalPath!,
-        version: 4, onCreate: _createDatabase, onUpgrade: _onUpgrade);
+        version: 5, onCreate: _createDatabase, onUpgrade: _onUpgrade);
 
     await EntriesProvider.instance.load();
     await EntryImagesProvider.instance.load();
@@ -278,6 +278,7 @@ CREATE TABLE $audiosTable (
     ${EntryAudioFields.entryId} INTEGER NOT NULL,
     ${EntryAudioFields.audioPath} TEXT NOT NULL,
     ${EntryAudioFields.timeCreate} DATETIME NOT NULL DEFAULT (DATETIME('now')),
+    ${EntryAudioFields.duration} INTEGER,
     FOREIGN KEY (${EntryAudioFields.entryId}) REFERENCES $entriesTable (id)
 )
 ''');
@@ -357,6 +358,11 @@ CREATE TABLE $audiosTable (
     ${EntryAudioFields.timeCreate} DATETIME NOT NULL DEFAULT (DATETIME('now')),
     FOREIGN KEY (${EntryAudioFields.entryId}) REFERENCES $entriesTable (id)
 )
+''');
+    }
+    if (oldVersion <= 4) {
+      await db.execute('''
+ALTER TABLE $audiosTable ADD COLUMN ${EntryAudioFields.duration} INTEGER
 ''');
     }
   }

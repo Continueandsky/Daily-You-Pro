@@ -52,7 +52,7 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
   DateTime? _lastEntryDate;
   DateTime? entryDate;
   late List<EntryImage> _currentImages;
-  EntryAudio? _currentAudio;
+  List<EntryAudio> _currentAudios = [];
   bool _loadingEntry = true;
   bool _openedCamera = false;
   final ScrollController _scrollController = ScrollController();
@@ -60,7 +60,7 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
   final TextEditingController _textEditingController = TextEditingController();
   final UndoHistoryController _undoController = UndoHistoryController();
   bool _deletingEntry = false;
-  bool _savingEntry = false;
+  Future<void>? _saveQueue;
   bool _newEntry = false;
   bool _creatingNewEntry = false;
   Timer? _debounceTimer;
@@ -102,12 +102,12 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
         _saveEntry();
       });
     });
-    // Load existing audio
+    // Load existing audios
     if (_entry.id != null) {
-      var existingAudio = EntryAudioProvider.instance.getForEntry(_entry);
-      if (existingAudio != null) {
-        _currentAudio = existingAudio.copy();
-      }
+      _currentAudios = EntryAudioProvider.instance
+          .getForEntry(_entry.id!)
+          .map((a) => a.copy())
+          .toList();
     }
     setState(() {
       _loadingEntry = false;
@@ -122,7 +122,7 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
     for (var image in widget.images) {
       _currentImages.add(image.copy());
     }
-    _currentAudio = null;
+    _currentAudios = [];
     _initEntry();
   }
 
@@ -336,7 +336,8 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
                                                   ),
                                                 ),
                                                 Row(
-                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     EntryImagePicker(
                                                       onChangedImage: (newImages) {
@@ -348,12 +349,14 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
                                                               !_openedCamera,
                                                     ),
                                                     const SizedBox(width: 8),
-                                                    EntryAudioPicker(
-                                                      currentAudio: _currentAudio,
-                                                      onChangedAudio: (audio) async {
-                                                        _currentAudio = audio;
-                                                        await _saveEntry();
-                                                      },
+                                                    Expanded(
+                                                      child: EntryAudioPicker(
+                                                        currentAudios: _currentAudios,
+                                                        onChangedAudios: (audios) async {
+                                                          _currentAudios = audios;
+                                                          await _saveEntry();
+                                                        },
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -454,11 +457,9 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
   }
 
   Future<void> _saveEntry() async {
-    // Saving is guarded since quickly entering and exiting the app could trigger
-    // multiple async saves.
-    if (_savingEntry == false) {
-      _savingEntry = true;
-
+    // Chain saves sequentially so concurrent calls (e.g. debounced text save
+    // + immediate audio/image save) don't silently drop updates.
+    _saveQueue = (_saveQueue ?? Future.value()).then((_) async {
       final updatedEntry = _entry.copy(
         text: text,
         mood: mood,
@@ -501,9 +502,9 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
       // Images will update if they changed
       await _saveOrUpdateImage(id);
       // Audio will update if it changed
-      await _saveOrUpdateAudio(id);
-      _savingEntry = false;
-    }
+      await _saveOrUpdateAudios(id);
+    });
+    await _saveQueue;
   }
 
   Future _deleteEntry(Entry entry) async {
@@ -513,12 +514,8 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
       await ImageStorage.instance.delete(image.imgPath);
       await EntryImagesProvider.instance.remove(image);
     }
-    // Delete entry audio
-    var entryAudio = EntryAudioProvider.instance.getForEntry(entry);
-    if (entryAudio != null) {
-      await AudioStorage.instance.delete(entryAudio.audioPath);
-      await EntryAudioProvider.instance.remove(entryAudio);
-    }
+    // Delete entry audios
+    await EntryAudioProvider.instance.removeAllForEntry(entry.id!);
     // Delete entry
     await EntriesProvider.instance.remove(entry);
   }
@@ -558,30 +555,32 @@ class _AddEditEntryPageState extends State<AddEditEntryPage>
     }
   }
 
-  Future _saveOrUpdateAudio(int entryId) async {
+  Future _saveOrUpdateAudios(int entryId) async {
     if (entryId == -1 || _entry.id == null) return;
-    final existingAudio = EntryAudioProvider.instance.getForEntry(_entry);
+    final existingAudios =
+        EntryAudioProvider.instance.getForEntry(_entry.id!);
 
-    if (_currentAudio != null) {
-      _currentAudio!.entryId = entryId;
-      if (existingAudio == null) {
-        // Add new audio
-        await EntryAudioProvider.instance.add(_currentAudio!);
-      } else if (existingAudio.audioPath != _currentAudio!.audioPath) {
-        // Audio changed — delete old, add new
-        await AudioStorage.instance.delete(existingAudio.audioPath);
-        await EntryAudioProvider.instance.remove(existingAudio);
-        await EntryAudioProvider.instance.add(_currentAudio!);
+    // Remove audios that are no longer in the list
+    for (final existing in existingAudios) {
+      if (!_currentAudios.any((a) => a.audioPath == existing.audioPath)) {
+        await AudioStorage.instance.delete(existing.audioPath);
+        await EntryAudioProvider.instance.remove(existing);
       }
-      // Refresh _currentAudio to match saved state
-      var savedAudio = EntryAudioProvider.instance.getForEntry(_entry);
-      _currentAudio = savedAudio?.copy();
-    } else if (existingAudio != null) {
-      // Audio removed
-      await AudioStorage.instance.delete(existingAudio.audioPath);
-      await EntryAudioProvider.instance.remove(existingAudio);
-      _currentAudio = null;
     }
+
+    // Add audios that are new
+    for (final current in _currentAudios) {
+      current.entryId = entryId;
+      if (!existingAudios.any((a) => a.audioPath == current.audioPath)) {
+        await EntryAudioProvider.instance.add(current);
+      }
+    }
+
+    // Refresh from DB
+    _currentAudios = EntryAudioProvider.instance
+        .getForEntry(_entry.id!)
+        .map((a) => a.copy())
+        .toList();
   }
 
   Future<void> _addImage(List<String> imgPaths) async {

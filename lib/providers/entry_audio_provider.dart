@@ -1,6 +1,6 @@
 import 'package:daily_you/database/app_database.dart';
+import 'package:daily_you/database/audio_storage.dart';
 import 'package:daily_you/database/entry_audio_dao.dart';
-import 'package:daily_you/models/entry.dart';
 import 'package:daily_you/models/audio.dart';
 import 'package:flutter/material.dart';
 
@@ -19,16 +19,18 @@ class EntryAudioProvider with ChangeNotifier {
 
   // CRUD operations
 
-  Future<void> add(EntryAudio audio, {skipUpdate = false}) async {
+  Future<EntryAudio> add(EntryAudio audio, {bool skipUpdate = false}) async {
     final audioWithId = await EntryAudioDao.add(audio);
     audios.add(audioWithId);
     await AppDatabase.instance.updateExternalDatabase();
     if (!skipUpdate) {
       notifyListeners();
     }
+    return audioWithId;
   }
 
   Future<void> remove(EntryAudio audio) async {
+    await AudioStorage.instance.delete(audio.audioPath);
     await EntryAudioDao.remove(audio);
     audios.removeWhere((x) => x.id == audio.id);
     await AppDatabase.instance.updateExternalDatabase();
@@ -43,8 +45,22 @@ class EntryAudioProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get the audio for a given entry, returns null if no audio is associated.
-  EntryAudio? getForEntry(Entry entry) {
-    return audios.where((audio) => audio.entryId == entry.id!).firstOrNull;
+  /// Get all audios for a given entry.
+  List<EntryAudio> getForEntry(int entryId) {
+    return audios.where((audio) => audio.entryId == entryId).toList();
+  }
+
+  /// Remove all audios for a given entry (e.g. when deleting an entry).
+  Future<void> removeAllForEntry(int entryId) async {
+    final toRemove = getForEntry(entryId);
+    for (final audio in toRemove) {
+      await AudioStorage.instance.delete(audio.audioPath);
+      await EntryAudioDao.remove(audio);
+      audios.removeWhere((x) => x.id == audio.id);
+    }
+    if (toRemove.isNotEmpty) {
+      await AppDatabase.instance.updateExternalDatabase();
+      notifyListeners();
+    }
   }
 }

@@ -188,12 +188,22 @@ class _GalleryPageState extends State<GalleryPage>
                         : SizedBox.shrink(
                             key: ValueKey('empty')), // Empty widget
                   ),
-                  if (entriesProvider.searchText.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Text(AppLocalizations.of(context)!
-                          .logCount(entries.length)),
-                    ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Text(AppLocalizations.of(context)!
+                        .logCount(entries.length)),
+                  ),
+                  IconButton(
+                      icon: Icon(listView
+                          ? Icons.view_agenda_rounded
+                          : Icons.grid_view_rounded),
+                      tooltip: listView
+                          ? AppLocalizations.of(context)!.galleryViewGrid
+                          : AppLocalizations.of(context)!.galleryViewList,
+                      onPressed: () {
+                        configProvider.set(ConfigKey.galleryPageViewMode,
+                            listView ? 'grid' : 'list');
+                      }),
                   IconButton(
                       icon: const Icon(Icons.sort_rounded),
                       onPressed: () => _showSortSelectionPopup(context)),
@@ -263,8 +273,8 @@ class _GalleryPageState extends State<GalleryPage>
             padding: const EdgeInsets.only(top: 70, bottom: 70),
             physics: const ScrollPhysics(),
             shrinkWrap: true,
-            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: listView ? 500 : 300,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: listView ? 1 : 2,
                 crossAxisSpacing: 1.0, // Spacing between columns
                 mainAxisSpacing: 1.0, // Spacing between rows
                 childAspectRatio: listView ? 2.0 : 1.0),

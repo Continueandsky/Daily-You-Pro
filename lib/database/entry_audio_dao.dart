@@ -9,18 +9,13 @@ class EntryAudioDao {
     return result.map((json) => EntryAudio.fromJson(json)).toList();
   }
 
-  static Future<EntryAudio?> getForEntry(int entryId) async {
+  static Future<List<EntryAudio>> getForEntry(int entryId) async {
     final maps = await AppDatabase.instance.database!.query(audiosTable,
         where: '${EntryAudioFields.entryId} = ?',
         whereArgs: [entryId],
-        limit: 1,
         orderBy: '${EntryAudioFields.timeCreate} DESC');
 
-    if (maps.isNotEmpty) {
-      return EntryAudio.fromJson(maps.first);
-    } else {
-      return null;
-    }
+    return maps.map((json) => EntryAudio.fromJson(json)).toList();
   }
 
   static Future<EntryAudio> add(EntryAudio entryAudio) async {

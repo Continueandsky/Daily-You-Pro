@@ -161,10 +161,7 @@ class EntriesProvider with ChangeNotifier {
       for (final image in images) {
         await EntryImagesProvider.instance.remove(image);
       }
-      var audio = EntryAudioProvider.instance.getForEntry(entry);
-      if (audio != null) {
-        await EntryAudioProvider.instance.remove(audio);
-      }
+      await EntryAudioProvider.instance.removeAllForEntry(entry.id!);
       processedEntries += 1;
       // The provider's remove function is not used to avoid editing the entries
       // list while iterating over it.
